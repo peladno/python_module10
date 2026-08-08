@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-from typing import Callable
+from typing import Any, Callable
 
 
 Spell = Callable[[str, int], str]
-test_values = [9, 15, 25]
+test_values = [9, 15, 250]
 test_targets = ['Dragon', 'Goblin', 'Wizard', 'Knight']
+
 
 def heal(target: str, power: int) -> str:
     return f"✨ Heal restores {target} for {power} HP"
@@ -12,6 +13,10 @@ def heal(target: str, power: int) -> str:
 
 def fireball(target: str, power: int) -> str:
     return f"🔥 Fireball hits {power} to {target}"
+
+
+def strong_enough(_: str, power: int) -> bool:
+    return power >= 50
 
 
 def spell_combiner(spell1: Spell,
@@ -29,10 +34,23 @@ def power_amplifier(base_spell: Callable[[str, int], str],
     return amplified_spell
 
 
+def conditional_caster(condition: Callable[[str, int], bool],
+                       spell: Spell) -> Callable[[str, int], Any]:
+    def conditional(target: str, power: int) -> Any:
+        if condition(target, power):
+            return spell(target, power)
+        return "Spell fizzled"
+    return conditional
 
 
 def test_amplifier() -> None:
-    pass
+    print("=== TESTING SPELL AMPLIFIER ===\n")
+    mega_fireball = power_amplifier(fireball, 3)
+
+    for target in test_targets:
+        for power in test_values:
+            print("Original:", fireball(target, power))
+            print("Amplified:", mega_fireball(target, power), end="\n\n")
 
 
 def test_combiner() -> None:
@@ -51,3 +69,4 @@ def test_combiner() -> None:
 
 if __name__ == "__main__":
     test_combiner()
+    test_amplifier()
