@@ -26,8 +26,8 @@ def spell_combiner(spell1: Spell,
     return combined_spell
 
 
-def power_amplifier(base_spell: Callable[[str, int], str],
-                    multiplier: int) -> Callable[[str, int], str]:
+def power_amplifier(base_spell: Spell,
+                    multiplier: int) -> Spell:
     def amplified_spell(target: str, power: int) -> str:
         amplified_power = power * multiplier
         return base_spell(target, amplified_power)
@@ -43,6 +43,10 @@ def conditional_caster(condition: Callable[[str, int], bool],
     return conditional
 
 
+def spell_sequence(spells: list[Spell]) -> None:
+    pass
+
+
 def test_amplifier() -> None:
     print("=== TESTING SPELL AMPLIFIER ===\n")
     mega_fireball = power_amplifier(fireball, 3)
@@ -54,9 +58,8 @@ def test_amplifier() -> None:
 
 
 def test_combiner() -> None:
-
-    combined = spell_combiner(fireball, heal)
     print("=== TESTING SPELL COMBINER ===\n")
+    combined = spell_combiner(fireball, heal)
 
     for target in test_targets:
         for power in test_values:
@@ -67,6 +70,18 @@ def test_combiner() -> None:
             print()
 
 
+def test_conditional() -> None:
+    print("=== TESTING CONDITIONAL CASTER ===\n")
+    conditional_fireball = conditional_caster(strong_enough, fireball)
+
+    for target in test_targets:
+        for power in test_values:
+            result = conditional_fireball(target, power)
+            print(f"Target: {target}, Power: {power}")
+            print(f"  Result: {result}\n")
+
+
 if __name__ == "__main__":
     test_combiner()
     test_amplifier()
+    test_conditional()
