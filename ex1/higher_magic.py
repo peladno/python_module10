@@ -43,8 +43,10 @@ def conditional_caster(condition: Callable[[str, int], bool],
     return conditional
 
 
-def spell_sequence(spells: list[Spell]) -> None:
-    pass
+def spell_sequence(spells: list[Spell]) -> Callable[[str, int], list[str]]:
+    def sequence(target: str, power: int) -> list[str]:
+        return [spell(target, power) for spell in spells]
+    return sequence
 
 
 def test_amplifier() -> None:
@@ -81,7 +83,20 @@ def test_conditional() -> None:
             print(f"  Result: {result}\n")
 
 
+def test_sequence() -> None:
+    print("=== TESTING SEQUENCE CASTER ===\n")
+    spell_list: list[Spell] = [heal, fireball]
+    sequense = spell_sequence(spell_list)
+
+    for target in test_targets:
+        for power in test_values:
+            result = sequense(target, power)
+            print(f"Target: {target}, Power: {power}")
+            print(f"  Result: {result}\n")
+
+
 if __name__ == "__main__":
     test_combiner()
     test_amplifier()
     test_conditional()
+    test_sequence()
