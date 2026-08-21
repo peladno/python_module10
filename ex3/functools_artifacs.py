@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from functools import reduce, partial, lru_cache
+from functools import reduce, partial, lru_cache, singledispatch
 import operator
 from typing import Any, Callable
 
@@ -81,6 +81,7 @@ def partial_test() -> None:
     print(spells["fire"]("Sword"))
     print(spells["ice"]("Shield"))
     print(spells["lightning"]("Bow"))
+    print()
 
 
 @lru_cache
@@ -97,10 +98,37 @@ def memo_test() -> None:
 
 
 def spell_dispatcher() -> Callable[[Any], str]:
-    raise NotImplementedError("Not implemented yet")
+    @singledispatch
+    def cast(spell: Any) -> str:
+        return f"Unknown spell type: {type(spell).__name__}"
+
+    @cast.register
+    def _(spell: int) -> str:
+        return f"Damage spell cast! You deal {spell} points of damage."
+
+    @cast.register
+    def _(spell: str) -> str:
+        return f"Enchantment spell cast! You imbue: '{spell}'."
+
+    @cast.register
+    def _(spell: list[Any]) -> str:
+        results = [cast(s) for s in spell]
+        return "Multi‑cast:\n" + "\n".join(results)
+
+    return cast
+
+
+def dispatch_test() -> None:
+    print("=== TESTING spell_dispacher ===\n")
+    cast = spell_dispatcher()
+    print(cast(50))
+    print(cast("fire aura"))
+    print(cast([10, "ice shard"]))
+    print(cast(3.14))
 
 
 if __name__ == "__main__":
     reducer_test()
     partial_test()
     memo_test()
+    dispatch_test()
