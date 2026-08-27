@@ -5,6 +5,18 @@ from typing import Any, Callable
 
 
 def spell_reducer(spells: list[int], operation: str) -> int:
+    """Combines a list of spell numerical values using functools.reduce.
+
+    Args:
+        spells: A list of integers representing spell values.
+        operation: The operation to perform ('add', 'multiply', 'max', 'min').
+
+    Returns:
+        The reduced integer result of the operation.
+
+    Raises:
+        Exception: If the operation is not supported.
+    """
     if not spells:
         return 0
 
@@ -22,6 +34,7 @@ def spell_reducer(spells: list[int], operation: str) -> int:
 
 
 def reducer_test() -> None:
+    """Runs test cases for spell_reducer."""
     print("=== TESTING spell_reducer ===\n")
 
     # Casos de prueba
@@ -44,23 +57,20 @@ def reducer_test() -> None:
         print()
 
 
-# def partial_enchanter(
-#     base_enchantment: Callable[[str, int, str], str]
-# ) -> dict[str, Callable[[str], str]]:
-
-#     def enchant(item: str, power: int, element: str) -> str:
-#         return base_enchantment(item, power, element)
-
-#     return {
-#         "fire": partial(enchant, power=50, element="fire"),
-#         "ice": partial(enchant, power=50, element="ice"),
-#         "lightning": partial(enchant, power=50, element="lightning"),
-#     }
-
 def partial_enchanter(
     base_enchantment: Callable[[int, str, str], str]
 ) -> dict[str, Callable[[str], str]]:
+    """Creates a dictionary of specialized enchantment functions using
+    functools.partial.
 
+    Args:
+        base_enchantment: A callable taking power (int), element (str),
+        and item (str).
+
+    Returns:
+        A dictionary mapping element names to partial functions
+        expecting only an item name.
+    """
     return {
         "fire": partial(base_enchantment, 50, "fire"),
         "ice": partial(base_enchantment, 50, "ice"),
@@ -69,6 +79,7 @@ def partial_enchanter(
 
 
 def partial_test() -> None:
+    """Runs test cases for partial_enchanter."""
     print("=== TESTING partial_enchanter ===\n")
 
     def base_enchantment(power: int, element: str, item: str) -> str:
@@ -86,18 +97,35 @@ def partial_test() -> None:
 
 @lru_cache
 def memoized_fibonacci(n: int) -> int:
+    """Computes the n-th Fibonacci number using functools.lru_cache
+    for memoization.
+
+    Args:
+        n: Non-negative integer index in the Fibonacci sequence.
+
+    Returns:
+        The n-th Fibonacci number.
+    """
     if n < 2:
         return n
     return memoized_fibonacci(n - 1) + memoized_fibonacci(n - 2)
 
 
 def memo_test() -> None:
+    """Runs test cases for memoized_fibonacci."""
     print("=== TESTING memoized_fibonacci ===\n")
 
     print(memoized_fibonacci(10))
 
 
 def spell_dispatcher() -> Callable[[Any], str]:
+    """Creates a single-dispatch spell caster function using
+    functools.singledispatch.
+
+    Returns:
+        A function that dispatches execution based on
+        the type of the spell argument.
+    """
     @singledispatch
     def cast(spell: Any) -> str:
         return f"Unknown spell type: {type(spell).__name__}"
@@ -110,21 +138,22 @@ def spell_dispatcher() -> Callable[[Any], str]:
     def _(spell: str) -> str:
         return f"Enchantment spell cast! You imbue: '{spell}'."
 
-    @cast.register
+    @cast.register(list)
     def _(spell: list[Any]) -> str:
         results = [cast(s) for s in spell]
-        return "Multi‑cast:\n" + "\n".join(results)
+        return "Multi-cast:\n" + "\n".join(results)
 
     return cast
 
 
 def dispatch_test() -> None:
+    """Runs test cases for spell_dispatcher."""
     print("=== TESTING spell_dispacher ===\n")
-    cast = spell_dispatcher()
-    print(cast(50))
-    print(cast("fire aura"))
-    print(cast([10, "ice shard"]))
-    print(cast(3.14))
+    caster = spell_dispatcher()
+    print(caster(50))
+    print(caster("fire aura"))
+    print(caster([10, "ice shard"]))
+    print(caster(3.14))
 
 
 if __name__ == "__main__":
