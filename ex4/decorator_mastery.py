@@ -98,14 +98,20 @@ def random_spell() -> str:
     return "Lighting bolt strike!"
 
 
-# TODO
-# MageGuild class - Demonstrate staticmethod:
-# • validate_mage_name(name) - Static method that checks if name is valid
-# • Name is valid if it’s at least 3 characters and contains only letters/spaces
-# • cast_spell(self, spell_name, power) - Instance method
-# • Should use the power_validator decorator with min_power=10
-# • When power is valid, return "Successfully cast spell_name with <power> power"
-# • Otherwise return "Insufficient power for this spell"
+class MageGuild():
+    @staticmethod
+    def validate_mage_name(name: str) -> bool:
+        if len(name) >= 3 and name.replace(" ", "").isalpha():
+            return True
+        return False
+
+    @power_validator(10)
+    def cast_spell(self, spell_name: str, power: int) -> str:
+        return (
+            "Successfully cast spell_name with "
+            f"<{spell_name}> {power} power"
+            )
+
 
 if __name__ == "__main__":
     print(spell("fire ball"))
@@ -116,3 +122,9 @@ if __name__ == "__main__":
     print(random_spell())
     print()
     print(fail_spell(2))
+    print()
+    name = "Gandalf"
+    print(f"Validating name: {name},", MageGuild.validate_mage_name(name))
+    cast = MageGuild()
+    print(cast.cast_spell("Fireball", 15))
+    print(cast.cast_spell("Fireball", 9))
